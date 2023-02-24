@@ -1,4 +1,7 @@
-const getkey="https://crudcrud.com/api/aa4901f010fd4bd48a8d1bd3def60588/appointmentData"
+const getkey="https://crudcrud.com/api/1518db6fb2ab4c9c8482a668c9440fb5/appointmentData"
+var idKey;
+
+var toggle= false
 window.addEventListener("DOMContentLoaded",()=>{
     const ul= document.getElementById("items");
 const name=document.getElementById("name").value;
@@ -20,7 +23,7 @@ deleteBtn.className="delete"
 //create edit button    
 const editBtn = document.createElement("input")
 editBtn.setAttribute("type","button")
-editBtn.setAttribute("onclick","editBtnFn()")
+editBtn.setAttribute("onclick","editBtnFn(event)")
 editBtn.className="edit"
 editBtn.value="Edit"
 
@@ -38,6 +41,21 @@ editBtn.value="Edit"
 
 function appointmentDetails(event){
     event.preventDefault();
+
+    if(toggle==true){
+        const editedName=document.getElementById("name").value;
+    const editedEmail=document.getElementById("email").value;
+    const obj={
+        "name" : editedName,
+        "email":editedEmail
+    }
+
+    axios.put(`${getkey}/${idKey}`,obj)
+    toggle= false;
+    location.reload()
+    }else{
+
+    
     const ul= document.getElementById("items");
     const name=document.getElementById("name").value;
     const email = document.getElementById("email").value;
@@ -47,10 +65,10 @@ function appointmentDetails(event){
     deleteBtn.setAttribute("onclick","deleteBtnFn(event)")
     deleteBtn.value="Delete"
     deleteBtn.className="delete"
-    //create ewdit button    
+    //create edit button    
     const editBtn = document.createElement("input")
     editBtn.setAttribute("type","button")
-    editBtn.setAttribute("onclick","editBtnFn()")
+    editBtn.setAttribute("onclick","editBtnFn(event)")
     editBtn.className="edit"
     editBtn.value="Edit"
     
@@ -69,6 +87,9 @@ function appointmentDetails(event){
     }
 
     axios.post(getkey,obj)
+}
+document.getElementById("name").value="";
+document.getElementById("email").value=""; 
     
 }
 
@@ -77,8 +98,7 @@ function deleteBtnFn(event){
     event.target.parentNode.style.display="none"
     const name=event.target.parentNode.textContent.split("-")[0]
     const email=event.target.parentNode.textContent.split("-")[1]
-    var ids;
-    console.log(name,email)
+   
     const id=axios.get(getkey)
     .then((res)=>{
         let arr = res.data;
@@ -98,6 +118,31 @@ id.then(res=>{
     
 }
 
-function editBtnFn(){
-    console.log("edit")
+function editBtnFn(event){
+     toggle= true
+    event.target.parentNode.style.display="none"
+    
+    const name=event.target.parentNode.textContent.split("-")[0]
+    const email=event.target.parentNode.textContent.split("-")[1]
+    document.getElementById("name").value=name
+    document.getElementById("email").value=email
+    const editedName=event.target.parentNode.textContent.split("-")[0]
+    const editedEmail=event.target.parentNode.textContent.split("-")[1]
+    const id=axios.get(getkey)
+    .then((res)=>{
+        let arr = res.data;
+        let id;
+        arr.forEach(element => {
+            if(element.name==name && element.email==email){
+            id=element._id
+        }
+        });
+        
+        return id
+    })
+id.then(res=>{
+    idKey=res
+})
+
+
 }
