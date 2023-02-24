@@ -75,6 +75,25 @@ function appointmentDetails(event){
 function deleteBtnFn(event){
 
     event.target.parentNode.style.display="none"
+    const name=event.target.parentNode.textContent.split("-")[0]
+    const email=event.target.parentNode.textContent.split("-")[1]
+    var ids;
+    console.log(name,email)
+    const id=axios.get(getkey)
+    .then((res)=>{
+        let arr = res.data;
+        let id;
+        arr.forEach(element => {
+            if(element.name==name && element.email==email){
+            id=element._id
+        }
+        });
+        
+        return id
+    })
+id.then(res=>{
+    axios.delete(`${getkey}/${res}`)
+})
 
     
 }
